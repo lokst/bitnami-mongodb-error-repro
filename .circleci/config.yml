@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: circleci/python:3.7-stretch
+    - image: bitnami/mongodb:3.6.11
+      environment:
+      - NAMI_LOG_LEVEL=trace8
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ADVERTISED_HOSTNAME=localhost
+    steps:
+    - checkout
+    - run:
+        name: Test
+        command: |
+          # Note: the mongodb container exits with an error before the sleep finishes
+          sleep 120
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+          echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+          sudo apt-get install -y apt-transport-https
+          sudo apt-get update
+          sudo apt-get install -y mongodb-org-shell
+          mongo --eval 'db.createUser({ user: "myrootuser", pwd: "mypassword", roles: [ { role: "userAdminAnyDatabase", db: "admin" } ] });'
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+    - build
