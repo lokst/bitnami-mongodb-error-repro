@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
     - image: circleci/python:3.7-stretch
-    - image: bitnami/mongodb:4
+    - image: bitnami/mongodb:4.1.13-debian-9-r24
       environment:
       - NAMI_LOG_LEVEL=trace8
       - MONGODB_REPLICA_SET_MODE=primary
